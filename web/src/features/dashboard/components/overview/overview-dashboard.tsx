@@ -67,6 +67,7 @@ import { AnnouncementsPanel } from './announcements-panel'
 import { ApiInfoPanel } from './api-info-panel'
 import { FAQPanel } from './faq-panel'
 import { PerformanceHealthPanel } from './performance-health-panel'
+import { QuickConnectBar } from './quick-connect-bar'
 import { SummaryCards } from './summary-cards'
 import { UptimePanel } from './uptime-panel'
 
@@ -786,6 +787,12 @@ export function OverviewDashboard() {
               </CardStaggerItem>
             </CardStaggerContainer>
           )}
+
+          <QuickConnectBar
+            endpoint={apiInfoItems[0]?.url}
+            preferredKey={preferredKey}
+            model={modelsQuery.data?.[0]}
+          />
 
           <SummaryCards />
 

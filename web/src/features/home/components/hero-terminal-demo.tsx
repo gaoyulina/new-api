@@ -20,7 +20,7 @@ import { useState, useEffect, useRef, type ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
-type AccentTone = 'emerald' | 'amber' | 'blue' | 'violet'
+type AccentTone = 'emerald' | 'amber' | 'blue' | 'violet' | 'cyan'
 
 interface ApiDemoConfig {
   id: string
@@ -68,17 +68,48 @@ const ACCENT_CLASSES: Record<
     badge:
       'bg-violet-500/10 text-violet-600 dark:bg-violet-400/10 dark:text-violet-400',
   },
+  cyan: {
+    activeText: 'text-cyan-600 dark:text-cyan-400',
+    activeBorder: 'border-cyan-500 dark:border-cyan-400',
+    badge:
+      'bg-cyan-500/10 text-cyan-600 dark:bg-cyan-400/10 dark:text-cyan-400',
+  },
 }
 
 const API_DEMOS: ApiDemoConfig[] = [
   {
-    id: 'gpt-chat',
-    label: 'Chat',
+    id: 'deepseek',
+    label: 'DeepSeek R1',
     method: 'POST',
     endpoint: '/v1/chat/completions',
     headers: ['"Authorization: Bearer sk-••••"'],
     request: [
-      '"model": "your-model",',
+      '"model": "deepseek-reasoner",',
+      '"messages": [',
+      '  { "role": "user", "content": "Analyze routing efficiency" }',
+      ']',
+    ],
+    response: [
+      '{',
+      '  "choices": [{',
+      '    "message": { "reasoning_content": <think>, "content": <text> }',
+      '  }],',
+      '  "usage": { "prompt_cache_hit": 1024, "total_tokens": <tokens> }',
+      '}',
+    ],
+    responseHighlights: ['<think>', '<text>', '<tokens>'],
+    tokens: 42,
+    latency: 86,
+    accent: 'cyan',
+  },
+  {
+    id: 'gpt-chat',
+    label: 'OpenAI o3',
+    method: 'POST',
+    endpoint: '/v1/chat/completions',
+    headers: ['"Authorization: Bearer sk-••••"'],
+    request: [
+      '"model": "o3-mini",',
       '"messages": [',
       '  { "role": "user", "content": "..." }',
       ']',
@@ -210,11 +241,29 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
     <div className={cn('mx-auto w-full max-w-2xl', props.className)}>
       <div
         className={cn(
-          'overflow-hidden rounded-2xl border backdrop-blur-sm',
-          'border-border/60 bg-white/95 shadow-[0_20px_50px_-25px_rgba(15,23,42,0.18)]',
-          'dark:border-white/[0.06] dark:bg-[#0b0f17]/95 dark:shadow-[0_20px_60px_-25px_rgba(0,0,0,0.7)]'
+          'overflow-hidden rounded-2xl border backdrop-blur-md',
+          'border-border/70 bg-card/90 shadow-[0_20px_50px_-25px_rgba(15,23,42,0.18)]',
+          'dark:border-border/40 dark:bg-card/75 dark:shadow-[0_20px_60px_-25px_rgba(0,0,0,0.7)]'
         )}
       >
+        {/* Gateway Telemetry Header */}
+        <div className='flex items-center justify-between border-b border-border/40 bg-muted/40 px-3.5 py-2 font-mono text-[11px] text-muted-foreground'>
+          <div className='flex items-center gap-2'>
+            <span className='size-2 rounded-full bg-emerald-500 animate-pulse' />
+            <span className='font-semibold text-foreground'>New API Gateway</span>
+            <span className='text-muted-foreground/40'>/</span>
+            <span className='hidden sm:inline text-muted-foreground'>Auto Failover Ready</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <span className='rounded bg-muted/80 px-1.5 py-0.5 font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-medium'>
+              {demo.latency}ms
+            </span>
+            <span className='rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] text-primary font-medium'>
+              200 OK
+            </span>
+          </div>
+        </div>
+
         {/* Tab strip */}
         <div
           className={cn(
@@ -413,7 +462,13 @@ function renderResponseLine(line: string, demo: ApiDemoConfig): ReactNode {
       )
     }
     const placeholder = match[0]
-    if (placeholder === '<text>') {
+    if (placeholder === '<think>') {
+      segments.push(
+        <span key={`ph-${idx}`} className='text-cyan-400/90 italic'>
+          {'"Routing analysis complete. 40+ models available."'}
+        </span>
+      )
+    } else if (placeholder === '<text>') {
       segments.push(
         <Accent key={`ph-${idx}`} accent={demo.accent}>
           {`"${truncateResponse(demo)}"`}
@@ -448,6 +503,7 @@ function renderResponseLine(line: string, demo: ApiDemoConfig): ReactNode {
 
 function truncateResponse(demo: ApiDemoConfig): string {
   const map: Record<string, string> = {
+    deepseek: 'DeepSeek R1 reasoning chain completed.',
     'gpt-chat': 'Chat request routed.',
     responses: 'Response workflow ready.',
     claude: 'Claude message routed.',

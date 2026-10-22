@@ -105,14 +105,14 @@ export const StatusBadgeTypeContext =
   React.createContext<StatusBadgeType>('badge')
 
 const sizeMap = {
-  sm: 'h-5 gap-1 px-1.5 text-sm leading-none',
-  md: 'h-5 gap-1 px-1.5 text-sm leading-none',
-  lg: 'h-6 gap-1.5 px-2 text-sm leading-none',
+  sm: 'h-5 gap-1 px-2 text-xs leading-none',
+  md: 'h-5.5 gap-1 px-2 text-xs leading-none',
+  lg: 'h-6 gap-1.5 px-2.5 text-xs leading-none',
 } as const
 
 const textSizeMap = {
-  sm: 'gap-1 text-sm leading-none',
-  md: 'gap-1 text-sm leading-none',
+  sm: 'gap-1 text-xs leading-none',
+  md: 'gap-1 text-xs leading-none',
   lg: 'gap-1.5 text-sm leading-none',
 } as const
 
@@ -182,9 +182,12 @@ export function StatusBadge({
     <span
       data-slot='status-badge'
       className={cn(
-        'inline-flex w-fit max-w-full min-w-0 shrink items-center font-medium tracking-normal whitespace-nowrap transition-colors',
+        'inline-flex w-fit max-w-full min-w-0 shrink items-center font-medium tracking-tight whitespace-nowrap transition-colors',
         isBadge
-          ? cn('rounded-4xl', sizeMap[size ?? 'sm'])
+          ? cn(
+              'rounded-full border border-current/18 bg-current/8 font-mono',
+              sizeMap[size ?? 'sm']
+            )
           : cn(
               textSizeMap[size ?? 'sm'],
               type === 'underline' && 'border-b border-current pb-px'

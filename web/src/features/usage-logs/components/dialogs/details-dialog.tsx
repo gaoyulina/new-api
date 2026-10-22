@@ -364,6 +364,57 @@ function BillingBreakdown(props: {
           ))}
         </>
       )}
+      {!isPerCall &&
+        !isTieredExpr &&
+        ((log.prompt_tokens ?? 0) > 0 || (log.completion_tokens ?? 0) > 0) && (
+          <div className='border-border/70 bg-muted/40 my-2.5 rounded-xl border p-3 font-mono text-xs'>
+            <div className='text-muted-foreground border-border/40 flex items-center justify-between border-b pb-2 text-[11px] font-medium'>
+              <span>{t('Billing Details')}</span>
+              <span className='text-foreground font-semibold'>
+                {formatLogQuota(log.quota)}
+              </span>
+            </div>
+            <div className='mt-2 space-y-1.5 text-[11px]'>
+              {(log.prompt_tokens ?? 0) > 0 && (
+                <div className='text-muted-foreground flex items-center justify-between'>
+                  <span>
+                    {t('Input')}: {(log.prompt_tokens ?? 0).toLocaleString()}{' '}
+                    tokens
+                  </span>
+                  {other.model_ratio != null && (
+                    <span className='text-foreground'>
+                      {fmtPrice(baseInputUSD)}/M
+                    </span>
+                  )}
+                </div>
+              )}
+              {(log.completion_tokens ?? 0) > 0 && (
+                <div className='text-muted-foreground flex items-center justify-between'>
+                  <span>
+                    {t('Output')}:{' '}
+                    {(log.completion_tokens ?? 0).toLocaleString()} tokens
+                  </span>
+                  {other.completion_ratio != null &&
+                    other.model_ratio != null && (
+                      <span className='text-foreground'>
+                        {fmtPrice(baseInputUSD * other.completion_ratio)}/M
+                      </span>
+                    )}
+                </div>
+              )}
+              {effectiveGR != null && effectiveGR !== 1 && (
+                <div className='text-primary border-border/30 flex items-center justify-between border-t pt-1'>
+                  <span>
+                    {isUserGR ? t('User Exclusive Ratio') : t('Group Ratio')}
+                  </span>
+                  <span className='font-semibold'>
+                    {formatRatio(effectiveGR)}x
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       <DetailRow
         label={t('Total Cost')}
         value={formatLogQuota(log.quota)}

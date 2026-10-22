@@ -58,7 +58,7 @@ import {
   createServerError,
   translateServerText,
 } from '@/lib/server-error-message'
-import { truncateText } from '@/lib/utils'
+import { cn, truncateText } from '@/lib/utils'
 
 import { getCodexUsage, updateChannelBalance } from '../api'
 import {
@@ -821,6 +821,11 @@ export function useChannelsColumns(
           const channel = row.original as Channel
           const isMultiKey = isMultiKeyChannel(channel)
           const multiKeyMode = channel.channel_info?.multi_key_mode ?? 'random'
+          const keySize = channel.channel_info?.multi_key_size ?? 0
+          const disabledCount = channel.channel_info?.multi_key_status_list
+            ? Object.keys(channel.channel_info.multi_key_status_list).length
+            : 0
+          const enabledCount = Math.max(0, keySize - disabledCount)
           const MultiKeyModeIcon =
             multiKeyMode === 'random' ? Shuffle : ListOrdered
           const multiKeyTooltip =
@@ -842,13 +847,27 @@ export function useChannelsColumns(
                   <Tooltip>
                     <TooltipTrigger
                       render={
-                        <span className='border-border bg-muted text-primary inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border' />
+                        <span className='border-border/80 bg-muted/60 text-foreground inline-flex h-5 items-center gap-1 rounded-full border px-1.5 text-[11px] font-mono tabular-nums transition-colors' />
                       }
                     >
-                      <MultiKeyModeIcon className='h-3 w-3' />
+                      <MultiKeyModeIcon className='text-primary h-3 w-3 shrink-0' />
+                      {keySize > 0 && (
+                        <span
+                          className={cn(
+                            disabledCount > 0
+                              ? enabledCount === 0
+                                ? 'text-destructive font-medium'
+                                : 'text-warning font-medium'
+                              : 'text-muted-foreground'
+                          )}
+                        >
+                          {enabledCount}/{keySize}
+                        </span>
+                      )}
                     </TooltipTrigger>
                     <TooltipContent side='top'>
                       {multiKeyTooltip}
+                      {keySize > 0 && ` (${enabledCount}/${keySize})`}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -1195,7 +1214,7 @@ export function useChannelsColumns(
               variant={config.variant}
               size='sm'
               copyable={false}
-              className='-ml-1.5'
+              className='-ml-1.5 font-mono font-medium tabular-nums'
             />
           )
         },

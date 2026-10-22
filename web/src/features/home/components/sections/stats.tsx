@@ -16,8 +16,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useRef, useEffect, useCallback } from 'react'
+import { Activity, Cpu, Layers, ShieldCheck } from 'lucide-react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { SpotlightCard } from '../spotlight-card'
 
 interface CounterProps {
   end: number
@@ -91,36 +94,102 @@ interface StatItem {
   end: number
   suffix: string
   label: string
-  decimals?: number
+  tag: string
+  icon: typeof Activity
+  accent: 'emerald' | 'blue' | 'purple' | 'amber'
+  subtext: string
 }
 
 export function Stats(_props: StatsProps) {
   const { t } = useTranslation()
 
   const stats: StatItem[] = [
-    { end: 50, suffix: '+', label: t('upstream services integrated') },
-    { end: 100, suffix: '+', label: t('model billing support') },
-    { end: 50, suffix: '+', label: t('compatible API routes') },
-    { end: 10, suffix: '+', label: t('scheduling controls') },
+    {
+      end: 50,
+      suffix: '+',
+      label: t('Upstream Services Integrated'),
+      tag: '40+ PROVIDERS',
+      icon: Cpu,
+      accent: 'blue',
+      subtext: 'Auto Load Balancing',
+    },
+    {
+      end: 100,
+      suffix: '+',
+      label: t('Model Billing Coverage'),
+      tag: '6-DECIMAL FINOPS',
+      icon: Layers,
+      accent: 'emerald',
+      subtext: 'Cache Hit Ratio Aware',
+    },
+    {
+      end: 50,
+      suffix: '+',
+      label: t('Standardized API Endpoints'),
+      tag: 'SUB-10MS OVERHEAD',
+      icon: Activity,
+      accent: 'purple',
+      subtext: 'Zero Protocol Penalty',
+    },
+    {
+      end: 10,
+      suffix: '+',
+      label: t('Scheduling & QoS Controls'),
+      tag: 'CIRCUIT BREAKER',
+      icon: ShieldCheck,
+      accent: 'amber',
+      subtext: 'Multi-Key Failover',
+    },
   ]
 
   return (
-    <div className='border-border/40 bg-muted/10 relative z-10 border-y'>
-      <div className='mx-auto max-w-6xl px-6 py-10 md:py-12'>
-        <div className='grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12'>
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className='flex flex-col items-center text-center'
-            >
-              <span className='text-2xl font-bold tracking-tight md:text-3xl'>
-                <Counter end={s.end} suffix={s.suffix} decimals={s.decimals} />
-              </span>
-              <span className='text-muted-foreground mt-1.5 text-xs'>
-                {s.label}
-              </span>
-            </div>
-          ))}
+    <div className='relative z-10 border-y border-border/40 bg-muted/10 py-12 md:py-16'>
+      <div className='mx-auto max-w-6xl px-6'>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+          {stats.map((s) => {
+            const Icon = s.icon
+            return (
+              <SpotlightCard
+                key={s.label}
+                spotlightColor={
+                  s.accent === 'emerald'
+                    ? 'rgba(16, 185, 129, 0.14)'
+                    : s.accent === 'blue'
+                      ? 'rgba(59, 130, 246, 0.14)'
+                      : s.accent === 'purple'
+                        ? 'rgba(168, 85, 247, 0.14)'
+                        : 'rgba(245, 158, 11, 0.14)'
+                }
+                className='flex flex-col justify-between p-5 transition-all duration-300 hover:border-border'
+              >
+                {/* Header row: Badge and Icon */}
+                <div className='mb-4 flex items-center justify-between'>
+                  <div className='flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2 py-0.5 font-mono text-[9px] font-semibold tracking-wider text-muted-foreground'>
+                    <span className='size-1.5 rounded-full bg-emerald-500 animate-pulse' />
+                    <span>{s.tag}</span>
+                  </div>
+                  <div className='flex size-7 items-center justify-center rounded-md border border-border/40 bg-muted/20 text-muted-foreground/80'>
+                    <Icon className='size-3.5' />
+                  </div>
+                </div>
+
+                {/* Counter value */}
+                <div className='mb-1.5 font-mono text-3xl font-extrabold tracking-tight text-foreground lg:text-4xl'>
+                  <Counter end={s.end} suffix={s.suffix} />
+                </div>
+
+                {/* Label & Technical subtext */}
+                <div>
+                  <div className='text-xs font-medium text-foreground/90'>
+                    {s.label}
+                  </div>
+                  <div className='mt-1 font-mono text-[10px] text-muted-foreground/60'>
+                    {s.subtext}
+                  </div>
+                </div>
+              </SpotlightCard>
+            )
+          })}
         </div>
       </div>
     </div>

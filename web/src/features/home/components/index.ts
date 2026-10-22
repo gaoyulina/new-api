@@ -16,8 +16,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-export { CTA } from './sections/cta'
-export { Features } from './sections/features'
-export { Hero } from './sections/hero'
-export { HowItWorks } from './sections/how-it-works'
-export { Stats } from './sections/stats'
+export { BrandMarquee } from "./brand-marquee"
+export { ClientIntegrationHub } from "./client-integration-hub"
+export { CTA } from "./sections/cta"
+export { DiscountStrip } from "./discount-strip"
+export { Features } from "./sections/features"
+export { GatewayHubSvg } from "./gateway-hub-svg"
+export { GatewayPlayground } from "./gateway-playground"
+export { Hero } from "./sections/hero"
+export { HeroIllustration } from "./hero-illustration"
+export { HomeFaq } from "./home-faq"
+export { HowItWorks } from "./sections/how-it-works"
+export { ModelMatrixExplorer } from "./model-matrix-explorer"
+export { SpotlightCard } from "./spotlight-card"
+export { Stats } from "./sections/stats"
+export { ToolsEcosystem } from "./tools-ecosystem"
+export { UniversalEndpointCard } from "./universal-endpoint-card"
